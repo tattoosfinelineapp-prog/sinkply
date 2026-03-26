@@ -33,7 +33,7 @@ export default function TattooCard({ tattoo, onOpen }: Props) {
         ) : (
           <Image
             src={tattoo.url}
-            alt={tattoo.alt_text || tattoo.title}
+            alt={tattoo.alt_text || `Tatuaje fine line ${tattoo.tags?.join(' ') || ''} Sinkply Madrid`}
             width={400}
             height={tattoo.height || 350}
             className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.02]"

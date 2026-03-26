@@ -164,7 +164,7 @@ export default function HomeGallery({
                       <div className="relative" style={{ aspectRatio: '3/4' }}>
                         <Image
                           src={t.url}
-                          alt={t.alt_text || t.title}
+                          alt={t.alt_text || `Tatuaje fine line ${t.tags?.join(' ') || ''} Sinkply Madrid`}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 33vw, 20vw"
@@ -210,6 +210,20 @@ export default function HomeGallery({
       )}
 
       {modalTattoo && <PhotoModal tattoo={modalTattoo} onClose={() => setModalTattoo(null)} />}
+
+      {/* SEO hidden text */}
+      <p className="sr-only">
+        Galería de tatuajes fine line actualizados diariamente. Estudio Sinkply en Madrid. Inspírate con los últimos trabajos de nuestros artistas.
+      </p>
+
+      {/* Footer */}
+      <footer className="text-center pt-12 pb-4">
+        <p className="text-xs text-gray-300">
+          © 2026 Sinkply Tattoo · Madrid
+          {' · '}
+          <a href="/privacidad" className="text-gray-400 hover:text-gray-500 transition-colors">Política de privacidad</a>
+        </p>
+      </footer>
     </div>
   )
 }
