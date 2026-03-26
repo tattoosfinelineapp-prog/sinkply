@@ -6,10 +6,11 @@ import { getPhotoById, getUserById } from '@/lib/queries'
 
 export const dynamic = 'force-dynamic'
 
-type Props = { params: { id: string } }
+type Props = { params: Promise<{ id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const tattoo = await getPhotoById(params.id)
+  const { id } = await params
+  const tattoo = await getPhotoById(id)
   if (!tattoo) return { title: 'No encontrado' }
   const tags = tattoo.tags.join(', ')
   return {
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function FotoPage({ params }: Props) {
-  const tattoo = await getPhotoById(params.id)
+  const { id } = await params
+  const tattoo = await getPhotoById(id)
   if (!tattoo) notFound()
   const artist = tattoo.tatuador_id ? await getUserById(tattoo.tatuador_id) : null
 
@@ -40,7 +42,7 @@ export default async function FotoPage({ params }: Props) {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <Link href="/galeria" className="text-sm text-gray-400 hover:text-[#111] mb-6 inline-block">← Galería</Link>
+      <Link href="/" className="text-sm text-gray-400 hover:text-[#111] mb-6 inline-block">← Volver</Link>
       <div className="rounded-2xl overflow-hidden bg-gray-100 mb-6">
         <Image src={tattoo.url} alt={tattoo.alt_text || ''} width={800} height={tattoo.height || 600} className="w-full h-auto" priority />
       </div>
@@ -65,7 +67,7 @@ export default async function FotoPage({ params }: Props) {
         </div>
       )}
       <div className="text-center pt-6 border-t border-gray-100">
-        <Link href="/galeria" className="text-sm text-gray-500 hover:text-[#111]">Ver más en Sinkply →</Link>
+        <Link href="/" className="text-sm text-gray-500 hover:text-[#111]">Ver más en Sinkply →</Link>
       </div>
     </div>
   )

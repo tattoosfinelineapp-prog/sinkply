@@ -5,11 +5,12 @@ import GaleriaFiltros from '@/components/GaleriaFiltros'
 
 export const dynamic = 'force-dynamic'
 
-type Props = { searchParams: { q?: string; orden?: string } }
+type Props = { searchParams: Promise<{ q?: string; orden?: string }> }
 
 export default async function GaleriaPage({ searchParams }: Props) {
-  const query = (await searchParams).q?.trim() ?? ''
-  const orden = ((await searchParams).orden as SortOrder) || 'recientes'
+  const sp = await searchParams
+  const query = sp.q?.trim() ?? ''
+  const orden = (sp.orden as SortOrder) || 'recientes'
   const { photos, total } = await getPhotosPage(0, 24, query || undefined, orden)
 
   return (

@@ -8,12 +8,13 @@ export const dynamic = 'force-dynamic'
 const RESERVED = new Set(['galeria', 'artistas', 'upload', 'registro', 'auth', 'api', 'foto', '_next'])
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
-export default async function ProfilePage({ params }: { params: { username: string } }) {
-  if (RESERVED.has(params.username.toLowerCase())) notFound()
+export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
+  const { username } = await params
+  if (RESERVED.has(username.toLowerCase())) notFound()
 
-  const user = UUID_RE.test(params.username)
-    ? await getUserById(params.username)
-    : await getUserByUsername(params.username)
+  const user = UUID_RE.test(username)
+    ? await getUserById(username)
+    : await getUserByUsername(username)
   if (!user) notFound()
 
   const photos = await getPhotosByTatuador(user.id)
