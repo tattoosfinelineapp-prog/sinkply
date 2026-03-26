@@ -119,6 +119,7 @@ export async function getPhotosPage(
     .from('photos')
     .select(SELECT_PHOTO, { count: 'exact' })
     .eq('status', 'published')
+    .neq('tatuador_id', '3593589d-7da6-479c-8a42-c931b4fc4487')
 
   // Sort order
   const sort = orden ?? 'recientes'
