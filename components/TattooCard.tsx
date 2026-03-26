@@ -2,18 +2,27 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { Heart } from 'lucide-react'
 import type { Tattoo } from '@/lib/data'
 
-export default function TattooCard({ tattoo }: { tattoo: Tattoo }) {
+type Props = {
+  tattoo: Tattoo
+  onOpen?: (tattoo: Tattoo) => void
+}
+
+export default function TattooCard({ tattoo, onOpen }: Props) {
   const [hovered, setHovered] = useState(false)
   const [imgError, setImgError] = useState(false)
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (onOpen) onOpen(tattoo)
+  }
+
   return (
-    <Link href={`/foto/${tattoo.id}`}>
+    <a href={`/foto/${tattoo.id}`} onClick={handleClick}>
       <div
-        className="relative rounded-xl overflow-hidden bg-gray-100 group"
+        className="relative rounded-xl overflow-hidden bg-gray-100 group cursor-pointer"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -42,6 +51,6 @@ export default function TattooCard({ tattoo }: { tattoo: Tattoo }) {
           </div>
         </div>
       </div>
-    </Link>
+    </a>
   )
 }
