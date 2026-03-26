@@ -82,6 +82,39 @@ const SELECT_PHOTO = 'id, url, title, alt_text, motivo, zona, tamaño, tags, lik
 const SELECT_PHOTO_FALLBACK = 'id, url, title, alt_text, motivo, zona, tamaño, tags, likes, height, tatuador_id, users!photos_tatuador_id_fkey(nombre)'
 const SELECT_PHOTO_MINIMAL = 'id, url, title, alt_text, motivo, zona, tamaño, tags, likes, height, tatuador_id'
 
+const EXCLUDED_USER = '3593589d-7da6-479c-8a42-c931b4fc4487'
+
+export async function getRecentPhotos(page = 0, limit = 5): Promise<{ photos: Tattoo[]; total: number }> {
+  if (!hasEnvVars()) return { photos: [], total: 0 }
+  const from = page * limit
+  const to = from + limit - 1
+
+  let { data, error, count } = await getClient()
+    .from('photos')
+    .select(SELECT_PHOTO, { count: 'exact' })
+    .eq('status', 'published')
+    .neq('tatuador_id', EXCLUDED_USER)
+    .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (error) {
+    const fb = await getClient().from('photos')
+      .select(SELECT_PHOTO_FALLBACK, { count: 'exact' })
+      .eq('status', 'published').neq('tatuador_id', EXCLUDED_USER)
+      .order('created_at', { ascending: false }).range(from, to)
+    data = fb.data as any; error = fb.error; count = fb.count
+  }
+  if (error) {
+    const fb2 = await getClient().from('photos')
+      .select(SELECT_PHOTO_MINIMAL, { count: 'exact' })
+      .eq('status', 'published').neq('tatuador_id', EXCLUDED_USER)
+      .order('created_at', { ascending: false }).range(from, to)
+    data = fb2.data as any; error = fb2.error; count = fb2.count
+  }
+  if (error) return { photos: [], total: 0 }
+  return { photos: (data as unknown as PhotoRow[]).map(mapPhoto), total: count ?? 0 }
+}
+
 export async function getPhotos(limit = 2000): Promise<Tattoo[]> {
   if (!hasEnvVars()) return []
   let { data, error } = await getClient()

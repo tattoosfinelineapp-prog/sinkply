@@ -8,16 +8,18 @@ import PhotoModal from './PhotoModal'
 import type { Tattoo } from '@/lib/data'
 
 const PAGE_SIZE = 24
-const RECENT_PAGE_SIZE = 5
+const RECENT_LOAD_SIZE = 12
 
 export default function HomeGallery({
   initialPhotos,
   initialTotal,
   recentPhotos,
+  recentTotal,
 }: {
   initialPhotos: Tattoo[]
   initialTotal: number
   recentPhotos: Tattoo[]
+  recentTotal: number
 }) {
   const [query, setQuery] = useState('')
   const [photos, setPhotos] = useState<Tattoo[]>(initialPhotos)
@@ -30,11 +32,12 @@ export default function HomeGallery({
   const sentinelRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  // Recent section state
+  // Recent section
   const [recentList, setRecentList] = useState<Tattoo[]>(recentPhotos)
-  const [recentPage, setRecentPage] = useState(1)
-  const [recentDone, setRecentDone] = useState(recentPhotos.length < RECENT_PAGE_SIZE)
+  const [recentDone, setRecentDone] = useState(recentPhotos.length >= recentTotal)
   const [loadingRecent, setLoadingRecent] = useState(false)
+  const recentOffsetRef = useRef(recentPhotos.length)
+
   const [modalTattoo, setModalTattoo] = useState<Tattoo | null>(null)
 
   doneRef.current = done
@@ -70,16 +73,18 @@ export default function HomeGallery({
 
   const loadMoreRecent = async () => {
     setLoadingRecent(true)
-    const params = new URLSearchParams({ page: String(recentPage), limit: String(RECENT_PAGE_SIZE) })
-    const res = await fetch(`/api/photos?${params}`)
+    const offset = recentOffsetRef.current
+    // Calculate page and use limit=RECENT_LOAD_SIZE
+    const page = Math.floor(offset / RECENT_LOAD_SIZE)
+    const res = await fetch(`/api/recent-photos?page=${page}&limit=${RECENT_LOAD_SIZE}`)
     const { photos: more } = await res.json()
     const newPhotos = (more ?? []) as Tattoo[]
-    if (newPhotos.length < RECENT_PAGE_SIZE) setRecentDone(true)
+    if (newPhotos.length < RECENT_LOAD_SIZE) setRecentDone(true)
     setRecentList(prev => {
       const ids = new Set(prev.map(p => p.id))
       return [...prev, ...newPhotos.filter(p => !ids.has(p.id))]
     })
-    setRecentPage(p => p + 1)
+    recentOffsetRef.current = offset + newPhotos.length
     setLoadingRecent(false)
   }
 
@@ -138,14 +143,24 @@ export default function HomeGallery({
         </div>
       ) : (
         <>
-          {/* Recent section — hidden when searching */}
+          {/* Recent section */}
           {!isSearching && recentList.length > 0 && (
             <>
               <div className="mb-6">
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-4">Añadidos esta semana</p>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                <p
+                  className="mb-4"
+                  style={{ fontSize: '13px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}
+                >
+                  Añadidos esta semana
+                </p>
+                <div className="grid grid-cols-3 sm:grid-cols-5" style={{ gap: '8px' }}>
                   {recentList.map(t => (
-                    <button key={t.id} onClick={() => setModalTattoo(t)} className="block rounded-xl overflow-hidden bg-gray-100 group">
+                    <button
+                      key={t.id}
+                      onClick={() => setModalTattoo(t)}
+                      className="block overflow-hidden bg-gray-100 group"
+                      style={{ borderRadius: '12px' }}
+                    >
                       <div className="relative" style={{ aspectRatio: '3/4' }}>
                         <Image
                           src={t.url}
@@ -160,19 +175,26 @@ export default function HomeGallery({
                   ))}
                 </div>
                 {!recentDone && (
-                  <div className="text-center mt-4">
+                  <div className="text-center mt-5">
                     <button
                       onClick={loadMoreRecent}
                       disabled={loadingRecent}
-                      className="text-sm text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                      className="text-sm font-medium disabled:opacity-50 transition-colors"
+                      style={{
+                        padding: '8px 20px',
+                        border: '1px solid #111',
+                        borderRadius: '10px',
+                        background: '#fff',
+                        color: '#111',
+                      }}
                     >
-                      {loadingRecent ? 'Cargando...' : 'Ver más recientes →'}
+                      {loadingRecent ? 'Cargando...' : 'Ver más →'}
                     </button>
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-gray-100 mb-8" />
+              <div style={{ borderTop: '1px solid #f0f0f0', marginBottom: '32px' }} />
             </>
           )}
 
@@ -187,7 +209,6 @@ export default function HomeGallery({
         </>
       )}
 
-      {/* Modal for recent section clicks */}
       {modalTattoo && <PhotoModal tattoo={modalTattoo} onClose={() => setModalTattoo(null)} />}
     </div>
   )
