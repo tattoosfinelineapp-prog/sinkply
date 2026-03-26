@@ -13,14 +13,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tattoo = await getPhotoById(id)
   if (!tattoo) return { title: 'No encontrado' }
   const tags = tattoo.tags.join(', ')
+  const title = `${tags || 'Fine line tattoo'} · Fine Line · Sinkply Madrid`
+  const description = `Tatuaje de ${tags || 'fine line'} realizado en Sinkply Tattoo Madrid. Fine line por ${tattoo.tatuador}.`
   return {
-    title: `${tags || 'Fine line tattoo'} — Sinkply`,
-    description: `Tatuaje fine line: ${tags}. Por ${tattoo.tatuador}.`,
+    title,
+    description,
+    keywords: [...tattoo.tags, 'sinkply', 'madrid', 'fine line', 'tatuaje'].join(', '),
     openGraph: {
-      title: `${tags} — Sinkply`,
-      images: [{ url: tattoo.url }],
+      title,
+      description,
+      images: [{ url: tattoo.url, width: 800, height: tattoo.height || 600 }],
       type: 'article',
-      siteName: 'Sinkply',
+      siteName: 'Sinkply Tattoo',
+      locale: 'es_ES',
+      url: `https://sinkply.com/foto/${id}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [tattoo.url],
+    },
+    alternates: {
+      canonical: `https://sinkply.com/foto/${id}`,
     },
   }
 }
@@ -35,8 +50,21 @@ export default async function FotoPage({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'ImageObject',
     contentUrl: tattoo.url,
+    thumbnailUrl: tattoo.url,
     description: tattoo.alt_text || tattoo.tags.join(', '),
-    author: artist ? { '@type': 'Person', name: artist.nombre } : undefined,
+    keywords: tattoo.tags.join(', '),
+    author: {
+      '@type': 'Organization',
+      name: 'Sinkply Tattoo',
+      url: 'https://sinkply.com',
+    },
+    ...(artist ? {
+      creator: {
+        '@type': 'Person',
+        name: artist.nombre,
+        url: `https://sinkply.com/${artist.username ?? artist.id}`,
+      },
+    } : {}),
   }
 
   return (
