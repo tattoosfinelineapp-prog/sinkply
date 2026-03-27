@@ -89,18 +89,18 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: Props) {
               <div className="relative">
                 <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="text" placeholder="Tu nombre" value={nombre} onChange={e => setNombre(e.target.value)} required
-                  className="w-full pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-200" />
+                  className="w-full pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200" />
               </div>
             )}
             <div className="relative">
               <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required
-                className="w-full pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-200" />
+                className="w-full pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200" />
             </div>
             <div className="relative">
               <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required minLength={6}
-                className="w-full pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-200" />
+                className="w-full pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200" />
             </div>
             {error && <p className="text-sm text-red-500 bg-red-50 rounded-xl px-3 py-2">{error}</p>}
             <button type="submit" disabled={loading}

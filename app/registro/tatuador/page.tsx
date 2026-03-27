@@ -49,17 +49,17 @@ export default function RegistroTatuadorPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input type="text" placeholder="Nombre artístico" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} required
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#111]" />
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#111]" />
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
             <input type="text" placeholder="username" value={form.username}
               onChange={e => setForm(f => ({ ...f, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') }))} required
-              className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#111]" />
+              className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#111]" />
           </div>
           <input type="email" placeholder="Email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#111]" />
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#111]" />
           <input type="password" placeholder="Contraseña" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} required minLength={6}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#111]" />
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#111]" />
           {error && <p className="text-xs text-red-500">{error}</p>}
           <button type="submit" disabled={loading} className="w-full py-3 bg-[#111] text-white rounded-xl text-sm font-medium hover:bg-black/80 disabled:opacity-50">
             {loading ? 'Creando...' : 'Crear cuenta de artista'}
